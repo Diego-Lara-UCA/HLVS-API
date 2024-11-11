@@ -1,0 +1,33 @@
+spring:
+    sql:
+        init:
+          mode: always
+    application:
+        name: HLVS-Backend
+    datasource:
+        url: jdbc:postgresql://ls-0a6ff655858b2f0dcbb22302632f5f598269d1c0.cegjzvtsujcu.us-east-1.rds.amazonaws.com/dbhlvs
+        username: oscarin
+        password: Oscarin777
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                globally_quoted_identifiers: true
+        show-sql: true
+
+    security:
+      oauth2:
+        client:
+            registration:
+                google:
+                    client-id: 790954685497-bigp30hn4jggl1malsafuc23ufqgonim.apps.googleusercontent.com
+                    client-secret: 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
+                    scope: openid,profile,email
+        resourceserver:
+          jwt:
+              issuer-uri: https://accounts.google.com
+              jwk-set-uri: https://www.googleapis.com/oauth2/v3/certs
+jwt:
+    secret: 6a1e1f68813b68c411e04a22145d52a7af5f6e7b658b6d1bb5d704f4f2a1e618
+    exptime: 1296000000
