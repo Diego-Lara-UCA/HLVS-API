@@ -48,7 +48,6 @@ public class EntranceController {
 
         try{
             Terminal terminal = terminalRepository.findByUbicacion(data.getType().toLowerCase()).orElse(null);
-
             Entrance response = entranceService.registerAnonymousEntrance(data, terminal);
 
             if (terminal == null){

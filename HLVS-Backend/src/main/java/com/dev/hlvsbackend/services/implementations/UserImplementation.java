@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -73,7 +74,6 @@ public class UserImplementation implements UserService {
     @Transactional(rollbackOn = Exception.class)
     public void cleanTokens(User user) throws Exception {
         List<Token> tokens = tokenRepository.findByUserAndActive(user, true);
-
         tokens.forEach(token -> {
             if (!jwtTools.verifyToken(token.getContent())) {
                 token.setActive(false);
@@ -128,4 +128,8 @@ public class UserImplementation implements UserService {
         return  userRepository.findUsersByUserType(UserTypeE.GUARD).orElse(null);
     }
 
+    @Override
+    public User getUserById(String id){
+        return userRepository.findById(UUID.fromString(id)).orElse(null);
+    }
 }

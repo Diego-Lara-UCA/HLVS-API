@@ -19,4 +19,5 @@ public interface UserService {
     Boolean isTokenValid(User user, String token);
     void cleanTokens(User user) throws Exception;
     List<User> getAllGuards();
+    User getUserById(String id);
 }

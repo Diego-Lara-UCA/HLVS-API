@@ -36,7 +36,7 @@ public class JWTTools {
 
         return Jwts.builder()
                 .claims(claims)
-                .subject(user.getNombre())
+                .subject(user.getId().toString())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + exp))
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes()))
@@ -55,7 +55,7 @@ public class JWTTools {
             return false;
         }
     }
-    public String getUsernameFrom(String token) {
+    public String getUserIdFromToken(String token) {
         try {
             JwtParser parser = Jwts.parser()
                     .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
