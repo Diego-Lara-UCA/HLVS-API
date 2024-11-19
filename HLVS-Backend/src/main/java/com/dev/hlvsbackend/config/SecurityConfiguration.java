@@ -24,7 +24,7 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
-                .requestMatchers("/api/auth/*").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/register").permitAll()
                 .requestMatchers("/api/residential/entrance/anonymous-access").hasAuthority("GUARD")
                 .anyRequest().authenticated());
