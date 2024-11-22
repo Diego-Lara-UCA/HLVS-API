@@ -8,8 +8,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -22,9 +22,11 @@ import java.io.IOException;
 @Component
 public class JWTTokenFilter extends OncePerRequestFilter {
 
+    @Lazy
     @Autowired
     JWTTools jwtTools;
 
+    @Lazy
     @Autowired
     UserService userService;
 
@@ -51,12 +53,11 @@ public class JWTTokenFilter extends OncePerRequestFilter {
             System.out.println("Bearer string not found");
         }
 
-        if(userId != null && token != null && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+        if(userId != null && token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User user = userService.getUserById(userId);
-
+            System.out.println(user.getUserType().toString());
             if(user != null) {
                 Boolean tokenValidity = userService.isTokenValid(user, token);
-
                 if(tokenValidity) {
                     if (
                             user.getUserType().toString().equals("USER") ||

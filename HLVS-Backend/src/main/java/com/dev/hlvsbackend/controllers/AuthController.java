@@ -37,10 +37,8 @@ public class AuthController {
     public ResponseEntity<GeneralResponse> login(@PathVariable String token) {
         try{
             String data = authService.VerifyGoogle(token);
-
             ObjectMapper mapper = new ObjectMapper();
             JsonNode dataJson = mapper.readTree(data);
-
             User user = userRepository.findUserByCorreo(dataJson.path("email").asText()).orElse(null);
 
             if (user != null){

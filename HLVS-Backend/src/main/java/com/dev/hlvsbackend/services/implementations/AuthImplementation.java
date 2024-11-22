@@ -20,7 +20,6 @@ public class AuthImplementation implements AuthService{
     @Override
     public String VerifyGoogle(String token){
         System.out.println(token);
-
         String responseBody = webClient.post()
                 .uri("https://oauth2.googleapis.com/tokeninfo?access_token="+token)
                 .retrieve()
@@ -28,7 +27,6 @@ public class AuthImplementation implements AuthService{
                 .block();
 
         System.out.println("ok");
-
         return responseBody;
     }
 }

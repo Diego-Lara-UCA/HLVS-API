@@ -67,7 +67,7 @@ public class EntranceController {
         }catch (Exception e){
             return GeneralResponse.getResponse(
                     HttpStatus.BAD_REQUEST,
-                    "Error when creating user",
+                    "An error ocure",
                     e.getMessage()
             );
         }
