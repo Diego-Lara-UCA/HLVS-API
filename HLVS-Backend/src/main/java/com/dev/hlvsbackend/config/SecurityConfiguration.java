@@ -49,10 +49,17 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers("/").permitAll()
-                //.requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/register").permitAll()
-                .requestMatchers("/api/auth/login/{token}").permitAll()
-                .requestMatchers("/api/residential/entrance/**").hasAuthority("GUARD")
+                .requestMatchers("/api/users/all").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/users/get-user").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/users/register-guard").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/users/all-guards").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/entrance/key/**").hasAnyAuthority("USER", "GUEST", "ADMIN")
+                .requestMatchers("/api/grace-time/**").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/residential/house/**").hasAnyAuthority("USER", "SUPERVISOR", "ADMIN")
+                .requestMatchers("/api/residential/permission/**").hasAnyAuthority("GUEST", "SUPERVISOR", "ADMIN")
+                .requestMatchers("/api/residential/entrance/**").hasAnyAuthority("GUARD", "ADMIN")
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
