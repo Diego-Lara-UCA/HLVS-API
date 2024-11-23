@@ -51,7 +51,8 @@ public class SecurityConfiguration {
                 .requestMatchers("/").permitAll()
                 //.requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/register").permitAll()
-                .requestMatchers("/api/auth/login/{token}").hasAuthority("GUARD")
+                .requestMatchers("/api/auth/login/{token}").permitAll()
+                .requestMatchers("/api/residential/entrance/**").hasAuthority("GUARD")
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
