@@ -41,7 +41,11 @@ public class AuthImplementation implements AuthService{
             JsonNode dataJson = mapper.readTree(responseBody);
             User user = userService.getUserByEmail(dataJson.path("email").asText());
             return userService.registerToken(user);
-        }catch (Exception e){
+        }
+        catch (UserUtils.UserNotFoundException e){
+            throw new UserUtils.UserNotFoundException();
+        }
+        catch (Exception e){
             throw new RuntimeException(e);
         }
     }
@@ -51,7 +55,11 @@ public class AuthImplementation implements AuthService{
         try {
             User user = userService.getUserByEmail(Identifier);
             userService.cleanTokens(user);
-        }catch (Exception e){
+        }
+        catch (UserUtils.UserNotFoundException e){
+            throw new UserUtils.UserNotFoundException();
+        }
+        catch (Exception e){
             throw new RuntimeException(e);
         }
     }
