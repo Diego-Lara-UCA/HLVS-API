@@ -42,7 +42,7 @@ public class AuthImplementation implements AuthService{
             return userService.registerToken(user);
 
         }catch (Exception e){
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class AuthImplementation implements AuthService{
             User user = userService.getUserByEmail(Identifier);
             userService.cleanTokens(user);
         }catch (Exception e){
-            System.out.println(e);
+            throw new RuntimeException(e);
         }
     }
 }
