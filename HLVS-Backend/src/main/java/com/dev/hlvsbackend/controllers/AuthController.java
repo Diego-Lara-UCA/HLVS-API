@@ -33,6 +33,7 @@ public class AuthController {
                     response
             );
         }
+
         catch (UserUtils.UserNotFoundException e) {
             return GeneralResponse.getResponse(
                     HttpStatus.OK,

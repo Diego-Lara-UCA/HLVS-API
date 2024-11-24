@@ -6,6 +6,7 @@ import com.dev.hlvsbackend.domain.entities.House;
 import com.dev.hlvsbackend.domain.entities.Token;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.domain.enums.UserTypeE;
+import com.dev.hlvsbackend.utils.UserUtils;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public interface UserService {
     List<User> getAllUsers();
     String registerUser(RegisterUserDTO data);
     String registerGuard(User data);
-    User getUserByEmail(String email);
+    User getUserByEmail(String email) throws UserUtils.UserNotFoundException;
     House setHouseToUser(User user, String house_id, UserTypeE userTypeE);
     Token registerToken(User user) throws Exception;
     Boolean isTokenValid(User user, String token);

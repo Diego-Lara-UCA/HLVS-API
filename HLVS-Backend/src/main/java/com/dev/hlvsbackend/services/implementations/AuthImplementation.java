@@ -4,6 +4,7 @@ import com.dev.hlvsbackend.domain.entities.Token;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.services.AuthService;
 import com.dev.hlvsbackend.services.UserService;
+import com.dev.hlvsbackend.utils.UserUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class AuthImplementation implements AuthService{
     }
 
     @Override
-    public Token VerifyGoogle(String token){
+    public Token VerifyGoogle(String token) throws UserUtils.UserNotFoundException {
         try {
             String responseBody = webClient.post()
                     .uri("https://oauth2.googleapis.com/tokeninfo?access_token="+token)
@@ -40,7 +41,6 @@ public class AuthImplementation implements AuthService{
             JsonNode dataJson = mapper.readTree(responseBody);
             User user = userService.getUserByEmail(dataJson.path("email").asText());
             return userService.registerToken(user);
-
         }catch (Exception e){
             throw new RuntimeException(e);
         }

@@ -115,7 +115,7 @@ public class UserImplementation implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) throws UserUtils.UserNotFoundException {
         return userRepository
                 .findUserByCorreo(email)
                 .orElseThrow(() -> new UserUtils.UserNotFoundException("User doesn't exist"));

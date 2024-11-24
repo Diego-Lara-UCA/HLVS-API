@@ -41,7 +41,6 @@ public class JWTTokenFilter extends OncePerRequestFilter {
             token = tokenHeader.substring(7);
             try {
                 userId = jwtTools.getUserIdFromToken(token);
-                System.out.println(userId);
             } catch (IllegalArgumentException e) {
                 System.out.println("Unable to get JWT Token");
             } catch (ExpiredJwtException e) {
@@ -55,7 +54,6 @@ public class JWTTokenFilter extends OncePerRequestFilter {
 
         if(userId != null && token != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             User user = userService.getUserById(userId);
-            System.out.println(user.getUserType().toString());
             if(user != null) {
                 Boolean tokenValidity = userService.isTokenValid(user, token);
                 if(tokenValidity) {
