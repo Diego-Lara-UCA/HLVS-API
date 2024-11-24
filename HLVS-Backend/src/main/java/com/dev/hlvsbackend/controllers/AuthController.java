@@ -3,17 +3,12 @@ package com.dev.hlvsbackend.controllers;
 import com.dev.hlvsbackend.domain.dtos.Auth.TokenDTO;
 import com.dev.hlvsbackend.domain.dtos.GeneralResponse;
 import com.dev.hlvsbackend.domain.entities.Token;
-import com.dev.hlvsbackend.domain.entities.User;
-import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.AuthService;
-import com.dev.hlvsbackend.services.UserService;
 import com.dev.hlvsbackend.utils.UserUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -56,22 +51,19 @@ public class AuthController {
     @PostMapping("/logout/{identifier}")
     public ResponseEntity<GeneralResponse> logout(@PathVariable String identifier) throws Exception {
         try {
-            User user = userRepository.findUserByCorreo(identifier).orElse(null);
-
-            if (user == null) {
-                return GeneralResponse.getResponse(
-                        HttpStatus.CONFLICT,
-                        "User doesn't exists"
-                );
-            }
-
-            userService.cleanTokens(user);
-
+            authService.logout(identifier);
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     "Logout successful"
             );
-        }catch (Exception e){
+        }
+        catch (UserUtils.UserNotFoundException e) {
+            return GeneralResponse.getResponse(
+                    HttpStatus.NOT_FOUND,
+                    "User doesn't exists"
+            );
+        }
+        catch (Exception e){
             return GeneralResponse.getResponse(
                     HttpStatus.BAD_REQUEST,
                     "Error fetching data",

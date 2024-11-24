@@ -4,5 +4,5 @@ import com.dev.hlvsbackend.domain.entities.Token;
 
 public interface AuthService {
     Token VerifyGoogle(String token);
-    void logout(S)
+    void logout(String Identifier);
 }

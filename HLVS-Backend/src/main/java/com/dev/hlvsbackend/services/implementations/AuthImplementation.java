@@ -10,8 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @Slf4j
@@ -45,6 +43,16 @@ public class AuthImplementation implements AuthService{
 
         }catch (Exception e){
             return null;
+        }
+    }
+
+    @Override
+    public void logout(String Identifier){
+        try {
+            User user = userService.getUserByEmail(Identifier);
+            userService.cleanTokens(user);
+        }catch (Exception e){
+            System.out.println(e);
         }
     }
 }
