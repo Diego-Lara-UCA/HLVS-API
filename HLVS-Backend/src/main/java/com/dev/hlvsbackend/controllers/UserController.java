@@ -45,7 +45,6 @@ public class UserController {
             );
         }
         try{
-
             User user = userService.getUserByEmail(data.getEmail());
 
             if (user != null){

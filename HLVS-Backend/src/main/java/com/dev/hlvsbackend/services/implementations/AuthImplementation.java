@@ -4,7 +4,6 @@ import com.dev.hlvsbackend.domain.entities.Token;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.services.AuthService;
 import com.dev.hlvsbackend.services.UserService;
-import com.dev.hlvsbackend.utils.UserUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -29,35 +28,24 @@ public class AuthImplementation implements AuthService{
     }
 
     @Override
-    public Token VerifyGoogle(String token) throws UserUtils.UserNotFoundException {
-        try {
-            String responseBody = webClient.post()
-                    .uri("https://oauth2.googleapis.com/tokeninfo?access_token="+token)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
+    public String VerifyGoogle(String token){
+        System.out.println(token);
 
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode dataJson = mapper.readTree(responseBody);
-            User user = userService.getUserByEmail(dataJson.path("email").asText());
-            return userService.registerToken(user);
-        }
-        catch (UserUtils.UserNotFoundException e){
-            throw new UserUtils.UserNotFoundException();
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        String responseBody = webClient.post()
+                .uri("https://oauth2.googleapis.com/tokeninfo?access_token="+token)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        System.out.println("ok");
+
+        return responseBody;
     }
 
     @Override
-    public void logout(String Identifier){
+    public void logout(User user){
         try {
-            User user = userService.getUserByEmail(Identifier);
             userService.cleanTokens(user);
-        }
-        catch (UserUtils.UserNotFoundException e){
-            throw new UserUtils.UserNotFoundException();
         }
         catch (Exception e){
             throw new RuntimeException(e);
