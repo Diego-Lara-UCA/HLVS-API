@@ -1,5 +1,8 @@
 package com.dev.hlvsbackend.services;
 
+import com.dev.hlvsbackend.domain.entities.Token;
+
 public interface AuthService {
-    String VerifyGoogle(String token);
+    Token VerifyGoogle(String token);
+    void logout(S)
 }

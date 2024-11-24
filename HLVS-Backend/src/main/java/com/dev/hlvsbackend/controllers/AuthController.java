@@ -7,8 +7,7 @@ import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.AuthService;
 import com.dev.hlvsbackend.services.UserService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dev.hlvsbackend.utils.UserUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,45 +19,32 @@ import java.util.List;
 @RequestMapping("/api/auth")
 public class AuthController {
     private final AuthService authService;
-    private final UserRepository userRepository;
-    private final UserService userService;
 
     public AuthController(
-            AuthService authService,
-            UserRepository userRepository,
-            UserService userService
+            AuthService authService
     ){
         this.authService = authService;
-        this.userRepository = userRepository;
-        this.userService = userService;
     }
 
     @PostMapping("/login/{token}")
     public ResponseEntity<GeneralResponse> login(@PathVariable String token) {
         try{
-            String data = authService.VerifyGoogle(token);
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode dataJson = mapper.readTree(data);
-            User user = userRepository.findUserByCorreo(dataJson.path("email").asText()).orElse(null);
-
-            if (user != null){
-                Token newtoken = userService.registerToken(user);
-                TokenDTO response = new TokenDTO();
-                response.setToken(newtoken.getContent());
-                return GeneralResponse.getResponse(
-                        HttpStatus.ACCEPTED,
-                        "Login successful",
-                        response
-                );
-            }
-
+            Token data = authService.VerifyGoogle(token);
+            TokenDTO response = new TokenDTO();
+            response.setToken(data.getContent());
+            return GeneralResponse.getResponse(
+                    HttpStatus.ACCEPTED,
+                    "Login successful",
+                    response
+            );
+        }
+        catch (UserUtils.UserNotFoundException e) {
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
-                    "Redirecting to register user form",
-                    data
+                    "Redirecting to register user form"
             );
-
-        }catch (Exception e){
+        }
+        catch (Exception e){
             return GeneralResponse.getResponse(
                     HttpStatus.BAD_REQUEST,
                     "Error fetching data",
@@ -71,6 +57,7 @@ public class AuthController {
     public ResponseEntity<GeneralResponse> logout(@PathVariable String identifier) throws Exception {
         try {
             User user = userRepository.findUserByCorreo(identifier).orElse(null);
+
             if (user == null) {
                 return GeneralResponse.getResponse(
                         HttpStatus.CONFLICT,

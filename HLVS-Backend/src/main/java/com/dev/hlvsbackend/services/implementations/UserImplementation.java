@@ -12,6 +12,7 @@ import com.dev.hlvsbackend.repositories.TokenRepository;
 import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.UserService;
 import com.dev.hlvsbackend.utils.JWTTools;
+import com.dev.hlvsbackend.utils.UserUtils;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,7 +115,11 @@ public class UserImplementation implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email){return userRepository.findUserByCorreo(email).orElse(null);}
+    public User getUserByEmail(String email){
+        return userRepository
+                .findUserByCorreo(email)
+                .orElseThrow(() -> new UserUtils.UserNotFoundException("User doesn't exist"));
+    }
 
     @Override
     public String registerGuard(User data){
@@ -130,6 +135,8 @@ public class UserImplementation implements UserService {
 
     @Override
     public User getUserById(String id){
-        return userRepository.findById(UUID.fromString(id)).orElse(null);
+        return userRepository
+                .findById(UUID.fromString(id))
+                .orElseThrow(() -> new UserUtils.UserNotFoundException("User doesn't exist"));
     }
 }
