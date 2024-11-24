@@ -48,26 +48,40 @@ public class SecurityConfiguration {
         http.httpBasic(Customizer.withDefaults());
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(auth -> auth
+                //INDEX
                 .requestMatchers("/").permitAll()
+
+                //AUTH ENDPOINT
                 .requestMatchers("/api/auth/**").permitAll()
+
+                //USER ENDPOINTS
                 .requestMatchers("/api/users/register").permitAll()
                 .requestMatchers("/api/users/all").hasAnyAuthority("ADMIN", "SUPERVISOR")
                 .requestMatchers("/api/users/get-user").hasAnyAuthority("ADMIN", "SUPERVISOR")
                 .requestMatchers("/api/users/register-guard").hasAnyAuthority("ADMIN", "SUPERVISOR")
                 .requestMatchers("/api/users/all-guards").hasAnyAuthority("ADMIN", "SUPERVISOR")
+
+                //ENTRANCE KEY ENDPOINTS
                 .requestMatchers("/api/entrance/key/**").hasAnyAuthority("USER", "GUEST", "ADMIN")
+
+                //GRACE TIME ENDPOINTS
                 .requestMatchers("/api/grace-time/**").hasAnyAuthority("ADMIN", "SUPERVISOR")
+
+                //HOUSE ENDPOINTS
                 .requestMatchers("/api/residential/house/**").hasAnyAuthority("USER", "SUPERVISOR", "ADMIN")
+
+                //PERMISSIONS ENDPOINTS
                 .requestMatchers("/api/residential/permission/**").hasAnyAuthority("GUEST", "SUPERVISOR", "ADMIN")
+
+                //ENTRANCES ENDPOINTS
                 .requestMatchers("/api/residential/entrance/**").hasAnyAuthority("GUARD", "ADMIN")
+
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         http.exceptionHandling(handling -> handling.authenticationEntryPoint((req, res, ex) -> {
             res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Auth fail!");
         }));
-
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
