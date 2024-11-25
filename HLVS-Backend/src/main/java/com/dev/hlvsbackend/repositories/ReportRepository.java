@@ -10,6 +10,6 @@ import java.util.UUID;
 
 public interface ReportRepository extends JpaRepository<Report, UUID> {
     List<Report> findAll();
-    //List<Report> findByUser(User user);
+    List<Report> findByUser(User user);
     Optional<Report> findById(UUID id);
 }

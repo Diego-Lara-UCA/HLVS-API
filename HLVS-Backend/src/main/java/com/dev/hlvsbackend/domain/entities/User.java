@@ -40,6 +40,8 @@ public class User implements UserDetails {
     private List<Entrance> entradas;
     @OneToMany(mappedBy = "user")
     private List<Permission> permissions;
+    @OneToMany(mappedBy = "user")
+    private List<Report> reports;
 
     @ManyToOne
     @JoinColumn(name = "FK_id_casa", nullable = true)

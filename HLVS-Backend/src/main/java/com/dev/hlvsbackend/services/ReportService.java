@@ -12,4 +12,5 @@ public interface ReportService {
     List<Report> getReport();
     Report getReportById(UUID id);
     List<Report> getReportForGuards();
+    List<Report> ReportListById(User user);
 }

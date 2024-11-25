@@ -16,4 +16,6 @@ public class RegisterReportDTO {
     private String description;
     @NotNull(message = "Report type cannot be null")
     private ReportType type;
+    @NotNull(message = "Report type cannot be null")
+    private String email;
 }

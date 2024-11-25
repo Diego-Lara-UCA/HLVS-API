@@ -76,6 +76,9 @@ public class SecurityConfiguration {
                 //ENTRANCES ENDPOINTS
                 .requestMatchers("/api/residential/entrance/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
 
+                //REPORTS ENDPOINTS
+                .requestMatchers("/api/report/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
+
                 .anyRequest().authenticated());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

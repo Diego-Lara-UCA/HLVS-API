@@ -7,6 +7,8 @@ import com.dev.hlvsbackend.domain.entities.Report;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.ReportService;
+import com.dev.hlvsbackend.services.UserService;
+import com.dev.hlvsbackend.utils.ReportUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,53 +23,31 @@ import java.util.UUID;
 @RequestMapping("/api/report")
 public class ReportController {
     private final ReportService reportService;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final ReportUtils reportUtils;
 
     public ReportController(
             ReportService reportService,
-            UserRepository userRepository) {
+            UserService userService, ReportUtils reportUtils
+    ){
         this.reportService = reportService;
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.reportUtils = reportUtils;
     }
 
     @GetMapping("/all")
     public ResponseEntity<GeneralResponse> getAllReports() {
         List<Report> reports = reportService.getReport();
-        List<ResponseReportDTO> reportDTO = new ArrayList<>();
-
-        reports.forEach(report -> {
-            ResponseReportDTO dto = new ResponseReportDTO();
-            dto.setId(report.getId());
-            dto.setNombre(report.getUser().getNombre());
-            dto.setDescription(report.getDescription());
-            dto.setType(String.valueOf(report.getType()));
-            dto.setDate(report.getCreatedAt());
-            reportDTO.add(dto);
-        });
+        List<ResponseReportDTO> reportDTO = reportUtils.CreateListResponseReportDTO(reports);
         return GeneralResponse.getResponse(
                 HttpStatus.OK,
                 "List of all reports!",
                 reportDTO
         );
     }
-            /*if(reports.isEmpty()) {
-                return GeneralResponse.getResponse(
-                        HttpStatus.NO_CONTENT,
-                        "No reports found"
-                );
-            }
-        } catch (Exception e) {
-            return GeneralResponse.getResponse(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error fetching reports",
-                    e.getMessage()
-            );
-        }
-    }*/
 
     @PostMapping("/create")
-    public ResponseEntity<GeneralResponse> createReport(
-            @RequestBody @Valid RegisterReportDTO data, BindingResult error, User user)
+    public ResponseEntity<GeneralResponse> createReport(@RequestBody @Valid RegisterReportDTO data, BindingResult error)
     {
         if (error.hasErrors()) {
             return GeneralResponse.getResponse(
@@ -77,8 +57,14 @@ public class ReportController {
             );
         }
         try {
+            User user = userService.getUserByEmail(data.getEmail());
+            if (user == null){
+                return GeneralResponse.getResponse(
+                        HttpStatus.NOT_FOUND,
+                        "User not found: " + data.getEmail()
+                );
+            }
             String response = reportService.createReport(data, user);
-
             return GeneralResponse.getResponse(
                     HttpStatus.CREATED,
                     "Report created successfully",
@@ -94,16 +80,21 @@ public class ReportController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GeneralResponse> getReportById(@PathVariable UUID id) {
+    public ResponseEntity<GeneralResponse> getReportById(@PathVariable String id) {
         try {
-            User user = userRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-            List<Report> reports = user.getReports();
+            User user = userService.getUserById(id);
+            if (user == null){
+                return GeneralResponse.getResponse(
+                        HttpStatus.NOT_FOUND,
+                        "User not found: " + id
+                );
+            }
 
+            List<ResponseReportDTO> response = reportUtils.CreateListResponseReportDTO(user.getReports());
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     "Lista de reportes del usuario " + user.getNombre(),
-                    reports
+                    response
             );
         } catch (Exception e) {
             return GeneralResponse.getResponse(
@@ -112,47 +103,24 @@ public class ReportController {
             e.getMessage()
             );
         }
-        /*try {
-            Report report = reportService.getReportById(id);
-
-            if(report == null) {
-                return GeneralResponse.getResponse(
-                        HttpStatus.NOT_FOUND,
-                        "Report not found with ID: " + id
-                );
-            }
-            return GeneralResponse.getResponse(
-                    HttpStatus.OK,
-                    "Report retrieved successfully",
-                    report
-            );
-        } catch (Exception e) {
-            return GeneralResponse.getResponse(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    "Error fetching report",
-                    e.getMessage()
-            );
-        }*/
     }
 
     @GetMapping("/guard")
     public ResponseEntity<GeneralResponse> getReportGuard() {
         List<Report> reports = reportService.getReportForGuards();
-        List<ResponseReportDTO> reportDTO = new ArrayList<>();
 
-        reports.forEach(report -> {
-            ResponseReportDTO dto = new ResponseReportDTO();
-            dto.setId(report.getId());
-            dto.setNombre(report.getUser().getNombre());
-            dto.setDescription(report.getDescription());
-            dto.setDate(report.getCreatedAt());
-            reportDTO.add(dto);
-        });
+        if (reports.isEmpty()){
+            return GeneralResponse.getResponse(
+                    HttpStatus.NOT_FOUND,
+                    "No reports found!"
+            );
+        }
+
+        List<ResponseReportDTO> reportDTO = reportUtils.CreateListResponseReportDTO(reports);
         return GeneralResponse.getResponse(
                 HttpStatus.OK,
                 "Reports for guards retrieved successfully",
                 reportDTO
         );
     }
-
 }
