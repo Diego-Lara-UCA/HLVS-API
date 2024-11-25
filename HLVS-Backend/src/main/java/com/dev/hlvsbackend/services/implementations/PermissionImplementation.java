@@ -30,7 +30,6 @@ public class PermissionImplementation implements PermissionService {
     private final EntranceKeyRepository entranceKeyRepository;
     private final GraceTimeRepository graceTimeRepository;
 
-
     public PermissionImplementation(
             PermissionRepository permissionRepository,
             EntranceKeyRepository entranceKeyRepository,
@@ -137,5 +136,10 @@ public class PermissionImplementation implements PermissionService {
         permission.setActivo(false);
         permission.setAprovado(false);
         permissionRepository.save(permission);
+    }
+
+    @Override
+    public Permission findPermissionById(Long id){
+        return permissionRepository.findById(id).orElse(null);
     }
 }

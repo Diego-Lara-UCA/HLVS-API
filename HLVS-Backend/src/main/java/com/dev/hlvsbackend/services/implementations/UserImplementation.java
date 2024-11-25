@@ -1,6 +1,5 @@
 package com.dev.hlvsbackend.services.implementations;
 
-import com.dev.hlvsbackend.domain.dtos.User.RegisterGuardDTO;
 import com.dev.hlvsbackend.domain.dtos.User.RegisterUserDTO;
 import com.dev.hlvsbackend.domain.entities.House;
 import com.dev.hlvsbackend.domain.entities.Token;
@@ -18,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -73,7 +73,6 @@ public class UserImplementation implements UserService {
     @Transactional(rollbackOn = Exception.class)
     public void cleanTokens(User user) throws Exception {
         List<Token> tokens = tokenRepository.findByUserAndActive(user, true);
-
         tokens.forEach(token -> {
             if (!jwtTools.verifyToken(token.getContent())) {
                 token.setActive(false);
@@ -114,7 +113,11 @@ public class UserImplementation implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email){return userRepository.findUserByCorreo(email).orElse(null);}
+    public User getUserByEmail(String email) {
+        return userRepository
+                .findUserByCorreo(email)
+                .orElse(null);
+    }
 
     @Override
     public String registerGuard(User data){
@@ -128,4 +131,10 @@ public class UserImplementation implements UserService {
         return  userRepository.findUsersByUserType(UserTypeE.GUARD).orElse(null);
     }
 
+    @Override
+    public User getUserById(String id){
+        return userRepository
+                .findById(UUID.fromString(id))
+                .orElse(null);
+    }
 }

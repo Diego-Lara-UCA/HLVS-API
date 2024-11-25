@@ -5,7 +5,7 @@ spring:
     application:
         name: HLVS-Backend
     datasource:
-        url: jdbc:postgresql://ls-0a6ff655858b2f0dcbb22302632f5f598269d1c0.cegjzvtsujcu.us-east-1.rds.amazonaws.com/dbhlvs
+        url: jdbc:postgresql://ls-435b27985e62cf12907f9d230822e3784f17aa63.cegjzvtsujcu.us-east-1.rds.amazonaws.com/dbhlvs
         username: oscarin
         password: Oscarin777
     jpa:

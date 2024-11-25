@@ -14,6 +14,7 @@ import com.dev.hlvsbackend.repositories.HouseRepository;
 import com.dev.hlvsbackend.repositories.PermissionRepository;
 import com.dev.hlvsbackend.services.PermissionService;
 import com.dev.hlvsbackend.services.UserService;
+import com.dev.hlvsbackend.utils.PermissionUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,20 +29,19 @@ import java.util.List;
 public class PermissionController {
     private final UserService userService;
     private final PermissionService permissionService;
-    private final PermissionRepository permissionRepository;
-
     private final HouseRepository houseRepository;
+    private final PermissionUtils permissionUtils;
 
     public PermissionController(
             UserService userService,
             PermissionService permissionService,
-            PermissionRepository permissionRepository,
-            HouseRepository houseRepository
+            HouseRepository houseRepository,
+            PermissionUtils permissionUtils
     ){
         this.userService = userService;
         this.permissionService = permissionService;
-        this.permissionRepository = permissionRepository;
         this.houseRepository = houseRepository;
+        this.permissionUtils = permissionUtils;
     }
 
     @PostMapping("/request")
@@ -97,8 +97,6 @@ public class PermissionController {
             }
 
             List<Permission> list = permissionService.GetPermissionsApprovedByUser(user);
-            List<PermissionResponseDTO> response = new ArrayList<>();
-
             if (list.isEmpty()){
                 list.add(null);
                 return GeneralResponse.getResponse(
@@ -108,23 +106,7 @@ public class PermissionController {
                 );
             }
 
-            list.forEach(permission -> {
-                PermissionResponseDTO dto = new PermissionResponseDTO();
-
-                dto.setId(permission.getId());
-                dto.setUser(permission.getUser().getCorreo());
-                dto.setHouse(permission.getHouse().getNumber());
-                dto.setAprovado(permission.getAprovado());
-                dto.setActivo(permission.getActivo());
-                dto.setDias_semana(permission.getDias_semana());
-                dto.setFecha_inicio(permission.getFecha_inicio());
-                dto.setFecha_final(permission.getFecha_final());
-                dto.setHora_inicio(permission.getHora_inicio());
-                dto.setHora_fin(permission.getHora_fin());
-                dto.setTipo_expiracion(permission.getTipo_expiracion());
-
-                response.add(dto);
-            });
+            List<PermissionResponseDTO> response = permissionUtils.CreateListOfPermissionResponseDTO(list);
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
@@ -143,8 +125,6 @@ public class PermissionController {
     public ResponseEntity<GeneralResponse> CreatePermission(){
         try{
             List<Permission> list = permissionService.GetAllPermissions();
-            List<PermissionResponseDTO> response = new ArrayList<>();
-
             if (list.isEmpty()){
                 list.add(null);
                 return GeneralResponse.getResponse(
@@ -154,24 +134,7 @@ public class PermissionController {
                 );
             }
 
-            list.forEach(permission -> {
-                PermissionResponseDTO dto = new PermissionResponseDTO();
-
-                dto.setId(permission.getId());
-                dto.setUser(permission.getUser().getCorreo());
-                dto.setHouse(permission.getHouse().getNumber());
-                dto.setAprovado(permission.getAprovado());
-                dto.setActivo(permission.getActivo());
-                dto.setDias_semana(permission.getDias_semana());
-                dto.setFecha_inicio(permission.getFecha_inicio());
-                dto.setFecha_final(permission.getFecha_final());
-                dto.setHora_inicio(permission.getHora_inicio());
-                dto.setHora_fin(permission.getHora_fin());
-                dto.setTipo_expiracion(permission.getTipo_expiracion());
-
-                response.add(dto);
-            });
-
+            List<PermissionResponseDTO> response = permissionUtils.CreateListOfPermissionResponseDTO(list);
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     response
@@ -197,14 +160,12 @@ public class PermissionController {
         try {
             User user_visit = userService.getUserByEmail(data.getEmail_permission());
             User user_house = userService.getUserByEmail(data.getEmail_house());
-
             if (user_visit == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
                         "User not found: " + data.getEmail_permission()
                 );
             }
-
             if (user_house == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
@@ -213,11 +174,9 @@ public class PermissionController {
             }
 
             permissionService.CreatePermission(user_visit, user_house, data);
-
             return GeneralResponse.getResponse(
                     HttpStatus.CREATED
             );
-
         }catch (Exception e){
             return GeneralResponse.getResponse(
                     HttpStatus.BAD_REQUEST,
@@ -239,8 +198,6 @@ public class PermissionController {
             }
 
             List<Permission> list = permissionService.GetPermissionsByHouse(house);
-            List<PermissionResponseDTO> response = new ArrayList<>();
-
             if (list.isEmpty()){
                 list.add(null);
                 return GeneralResponse.getResponse(
@@ -250,24 +207,7 @@ public class PermissionController {
                 );
             }
 
-            list.forEach(permission -> {
-                PermissionResponseDTO dto = new PermissionResponseDTO();
-
-                dto.setId(permission.getId());
-                dto.setUser(permission.getUser().getCorreo());
-                dto.setHouse(permission.getHouse().getNumber());
-                dto.setAprovado(permission.getAprovado());
-                dto.setActivo(permission.getActivo());
-                dto.setDias_semana(permission.getDias_semana());
-                dto.setFecha_inicio(permission.getFecha_inicio());
-                dto.setFecha_final(permission.getFecha_final());
-                dto.setHora_inicio(permission.getHora_inicio());
-                dto.setHora_fin(permission.getHora_fin());
-                dto.setTipo_expiracion(permission.getTipo_expiracion());
-
-                response.add(dto);
-            });
-
+            List<PermissionResponseDTO> response = permissionUtils.CreateListOfPermissionResponseDTO(list);
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     response
@@ -284,7 +224,7 @@ public class PermissionController {
     @PostMapping("/approve/{id}")
     public ResponseEntity<GeneralResponse> ApprovePermission(@PathVariable Long id){
         try {
-            Permission permission = permissionRepository.findById(id).orElse(null);
+            Permission permission = permissionService.findPermissionById(id);
             if (permission == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
@@ -293,7 +233,6 @@ public class PermissionController {
             }
 
             permissionService.SetPermissionApproveAndActive(permission);
-
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     "Permission approved!"
@@ -311,7 +250,7 @@ public class PermissionController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<GeneralResponse> DeletePermission(@PathVariable Long id){
         try {
-            Permission permission = permissionRepository.findById(id).orElse(null);
+            Permission permission = permissionService.findPermissionById(id);
             if (permission == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
@@ -320,7 +259,6 @@ public class PermissionController {
             }
 
             permissionService.DeletePermission(permission);
-
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     "Permission deleted!"

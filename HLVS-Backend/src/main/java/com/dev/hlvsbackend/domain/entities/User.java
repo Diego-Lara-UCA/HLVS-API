@@ -4,21 +4,22 @@ import com.dev.hlvsbackend.domain.enums.DocumentType;
 import com.dev.hlvsbackend.domain.enums.UserTypeE;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.security.PublicKey;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Data
 @Table(name = "Usuario")
-public class User {
+@ToString(exclude = "tokens")
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -39,12 +40,45 @@ public class User {
     private List<Entrance> entradas;
     @OneToMany(mappedBy = "user")
     private List<Permission> permissions;
+    @OneToMany(mappedBy = "user")
+    private List<Report> reports;
 
     @ManyToOne
     @JoinColumn(name = "FK_id_casa", nullable = true)
     private House casa;
 
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(new SimpleGrantedAuthority(this.userType.toString()));
+    }
+
+    @Override
+    public String getPassword() {
         return null;
+    }
+
+    @Override
+    public String getUsername() {
+        return null;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
     }
 }

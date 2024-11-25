@@ -12,6 +12,7 @@ import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.HouseService;
 import com.dev.hlvsbackend.services.PermissionService;
 import com.dev.hlvsbackend.services.UserService;
+import com.dev.hlvsbackend.utils.HouseUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,17 +32,20 @@ public class HouseController {
     private final UserRepository userRepository;
     private final UserService userService;
     private final PermissionService permissionService;
+    private final HouseUtils houseUtils;
 
     public HouseController(
             HouseService houseService,
             UserRepository userRepository,
             UserService userService,
-            PermissionService permissionService
+            PermissionService permissionService,
+            HouseUtils houseUtils
     ) {
         this.houseService = houseService;
         this.userRepository = userRepository;
         this.userService = userService;
         this.permissionService = permissionService;
+        this.houseUtils = houseUtils;
     }
 
     //@GetMapping("/all")
@@ -58,13 +62,8 @@ public class HouseController {
                 );
             }
 
-            GetHouseDTO response = new GetHouseDTO();
+            List<User> userlist = houseService.getResidentsOfHouse(house);
 
-            response.setHouse_number(house.getNumber());
-            response.setDireccion(house.getDireccion());
-            response.setCantidad_residentes(house.getCantidad_residentes());
-
-            List<User> userlist = house.getUsers();
             if (userlist.isEmpty()){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
@@ -72,19 +71,7 @@ public class HouseController {
                 );
             }
 
-            List<GetUserDTO> list = new ArrayList<>();
-            userlist.forEach( userf -> {
-                GetUserDTO dto = new GetUserDTO();
-                dto.setId(userf.getId().toString());
-                dto.setNombre(userf.getNombre());
-                dto.setCorreo_google(userf.getCorreo());
-                dto.setId_casa(userf.getCasa().getId().intValue());
-                dto.setTipo_usuario(userf.getUserType().toString());
-
-                list.add(dto);
-            });
-
-            response.setUsers(list);
+            GetHouseDTO response = houseUtils.createGetHouseDTO(house, userlist);
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
@@ -218,35 +205,8 @@ public class HouseController {
                 );
             }
 
-            GetHouseDTO response = new GetHouseDTO();
-
-            response.setHouse_number(house.getNumber());
-            response.setDireccion(house.getDireccion());
-            response.setCantidad_residentes(house.getCantidad_residentes());
-
-            List<User> userlist = userRepository.findByCasa(house).orElse(null);
-
-            if (userlist.isEmpty()){
-                return GeneralResponse.getResponse(
-                        HttpStatus.NOT_FOUND,
-                        "This house does not contain guests!"
-                );
-            }
-
-            List<GetUserDTO> list = new ArrayList<>();
-
-            userlist.forEach( userf -> {
-                GetUserDTO dto = new GetUserDTO();
-                dto.setId(userf.getId().toString());
-                dto.setNombre(userf.getNombre());
-                dto.setCorreo_google(userf.getCorreo());
-                dto.setId_casa(userf.getCasa().getId().intValue());
-                dto.setTipo_usuario(userf.getUserType().toString());
-
-                list.add(dto);
-            });
-
-            response.setUsers(list);
+            List<User> userlist = houseService.getResidentsOfHouse(house);
+            GetHouseDTO response = houseUtils.createGetHouseDTO(house, userlist);
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,

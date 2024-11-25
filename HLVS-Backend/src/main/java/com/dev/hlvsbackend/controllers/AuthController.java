@@ -13,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,10 +35,8 @@ public class AuthController {
     public ResponseEntity<GeneralResponse> login(@PathVariable String token) {
         try{
             String data = authService.VerifyGoogle(token);
-
             ObjectMapper mapper = new ObjectMapper();
             JsonNode dataJson = mapper.readTree(data);
-
             User user = userRepository.findUserByCorreo(dataJson.path("email").asText()).orElse(null);
 
             if (user != null){
@@ -56,8 +52,7 @@ public class AuthController {
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
-                    "Redirecting to register user form",
-                    data
+                    "Redirecting to register user form"
             );
 
         }catch (Exception e){
@@ -80,7 +75,7 @@ public class AuthController {
                 );
             }
 
-            userService.cleanTokens(user);
+            authService.logout(user);
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
@@ -88,9 +83,9 @@ public class AuthController {
             );
         }catch (Exception e){
             return GeneralResponse.getResponse(
-                    HttpStatus.BAD_REQUEST,
-                    "Error fetching data",
-                    e.getMessage()
+                HttpStatus.BAD_REQUEST,
+                "Error fetching data",
+                e.getMessage()
             );
         }
     }
