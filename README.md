@@ -21,6 +21,8 @@ Este proyecto utiliza las siguientes tecnologías:
   - ReactJS
   - Typescript
   - Tailwind CSS
+- **Base de datos**:
+  - PosgreSQL
 - **Infraestructura**:
   - Ubuntu Server
   - NodeJS
