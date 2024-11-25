@@ -53,4 +53,9 @@ public class HouseImplementation implements HouseService {
         list.add(user);
         return houseRepository.findHouseByUsers(list).orElse(null);
     }
+
+    @Override
+    public List<User> getResidentsOfHouse(House house){
+        return house.getUsers();
+    }
 }

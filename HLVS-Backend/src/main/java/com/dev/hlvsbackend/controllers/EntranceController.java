@@ -10,6 +10,7 @@ import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.repositories.TerminalRepository;
 import com.dev.hlvsbackend.repositories.UserRepository;
 import com.dev.hlvsbackend.services.EntranceService;
+import com.dev.hlvsbackend.utils.EntranceUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,15 +26,18 @@ public class EntranceController {
     private final EntranceService entranceService;
     private final TerminalRepository terminalRepository;
     private final UserRepository userRepository;
+    private final EntranceUtils entranceUtils;
 
     public EntranceController(
             EntranceService entranceService,
             TerminalRepository terminalRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            EntranceUtils entranceUtils
     ){
         this.entranceService = entranceService;
         this.terminalRepository = terminalRepository;
         this.userRepository = userRepository;
+        this.entranceUtils = entranceUtils;
     }
 
     @PostMapping("/anonymous-access")
@@ -67,7 +71,7 @@ public class EntranceController {
         }catch (Exception e){
             return GeneralResponse.getResponse(
                     HttpStatus.BAD_REQUEST,
-                    "Error when creating user",
+                    "An error ocure",
                     e.getMessage()
             );
         }
@@ -76,27 +80,7 @@ public class EntranceController {
     @GetMapping("/all")
     public ResponseEntity<GeneralResponse> findAll() {
         List<Entrance> list = entranceService.getAllEntrances();
-        List<ResponseEntranceDTO> response = new ArrayList<>();
-
-        list.forEach(entrance -> {
-            ResponseEntranceDTO dto = new ResponseEntranceDTO();
-            dto.setId(entrance.getId());
-            if (entrance.getCasa() != null)
-                dto.setHouse(entrance.getCasa().getNumber());
-            if (entrance.getId_usuario() != null) {
-                dto.setEmail(entrance.getId_usuario().getCorreo());
-            }
-            else{
-                dto.setEmail(entrance.getUser_name_anonymous());
-            }
-            if (entrance.getComentario() != null)
-                dto.setComment(entrance.getComentario());
-            dto.setHour(entrance.getHora().toString());
-            dto.setDate(entrance.getFecha().toString());
-            dto.setType(entrance.getEntrance_type());
-
-            response.add(dto);
-        });
+        List<ResponseEntranceDTO> response = entranceUtils.createListOfEntrancesDTO(list);
 
         return GeneralResponse.getResponse(
                 HttpStatus.OK,
@@ -117,7 +101,6 @@ public class EntranceController {
         }
 
         List<Entrance> list = user.getEntradas();
-
         if (user.getEntradas() == null){
             return GeneralResponse.getResponse(
                     HttpStatus.NOT_FOUND,
@@ -125,28 +108,7 @@ public class EntranceController {
             );
         }
 
-        List<ResponseEntranceDTO> response = new ArrayList<>();
-
-        list.forEach(entrance -> {
-            ResponseEntranceDTO dto = new ResponseEntranceDTO();
-            dto.setId(entrance.getId());
-            if (entrance.getCasa() != null)
-                dto.setHouse(entrance.getCasa().getNumber());
-            if (entrance.getId_usuario() != null) {
-                dto.setEmail(entrance.getId_usuario().getCorreo());
-            }
-            else{
-                dto.setEmail(entrance.getUser_name_anonymous());
-            }
-            if (entrance.getComentario() != null)
-                dto.setComment(entrance.getComentario());
-            dto.setHour(entrance.getHora().toString());
-            dto.setDate(entrance.getFecha().toString());
-            dto.setType(entrance.getEntrance_type());
-
-            response.add(dto);
-        });
-
+        List<ResponseEntranceDTO> response = entranceUtils.createListOfEntrancesDTO(list);
         return GeneralResponse.getResponse(
                 HttpStatus.OK,
                 "List of entrances!",

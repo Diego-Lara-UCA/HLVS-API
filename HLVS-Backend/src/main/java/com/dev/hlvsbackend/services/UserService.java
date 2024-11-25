@@ -1,6 +1,5 @@
 package com.dev.hlvsbackend.services;
 
-import com.dev.hlvsbackend.domain.dtos.User.RegisterGuardDTO;
 import com.dev.hlvsbackend.domain.dtos.User.RegisterUserDTO;
 import com.dev.hlvsbackend.domain.entities.House;
 import com.dev.hlvsbackend.domain.entities.Token;

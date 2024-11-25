@@ -1,6 +1,5 @@
 package com.dev.hlvsbackend.services.implementations;
 
-import com.dev.hlvsbackend.domain.dtos.User.RegisterGuardDTO;
 import com.dev.hlvsbackend.domain.dtos.User.RegisterUserDTO;
 import com.dev.hlvsbackend.domain.entities.House;
 import com.dev.hlvsbackend.domain.entities.Token;
@@ -114,7 +113,11 @@ public class UserImplementation implements UserService {
     }
 
     @Override
-    public User getUserByEmail(String email){return userRepository.findUserByCorreo(email).orElse(null);}
+    public User getUserByEmail(String email) {
+        return userRepository
+                .findUserByCorreo(email)
+                .orElse(null);
+    }
 
     @Override
     public String registerGuard(User data){
@@ -130,6 +133,8 @@ public class UserImplementation implements UserService {
 
     @Override
     public User getUserById(String id){
-        return userRepository.findById(UUID.fromString(id)).orElse(null);
+        return userRepository
+                .findById(UUID.fromString(id))
+                .orElse(null);
     }
 }

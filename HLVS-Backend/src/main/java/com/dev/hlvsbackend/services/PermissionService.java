@@ -21,4 +21,5 @@ public interface PermissionService {
     void SetPermissionInactive(Permission permission);
     void SetPermissionApproveAndActive(Permission permission);
     void DeletePermission(Permission permission);
+    Permission findPermissionById(Long id);
 }

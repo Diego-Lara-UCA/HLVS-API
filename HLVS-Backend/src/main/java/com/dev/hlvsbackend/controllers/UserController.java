@@ -11,6 +11,7 @@ import com.dev.hlvsbackend.domain.entities.Token;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.domain.enums.UserTypeE;
 import com.dev.hlvsbackend.services.UserService;
+import com.dev.hlvsbackend.utils.UserUtils;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,18 +24,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
-    public UserService userService;
+    private final UserService userService;
+    private final UserUtils userUtils;
 
-    public UserController(UserService userService) {
+    public UserController(
+            UserService userService,
+            UserUtils userUtils
+    ){
         this.userService = userService;
+        this.userUtils = userUtils;
     }
 
     @GetMapping("/all")
     public ResponseEntity<GeneralResponse> findAll() {
+        List<GetUserDTO> response = userUtils.CreateListOfGetUserDTO(userService.getAllUsers());
         return GeneralResponse.getResponse(
                 HttpStatus.OK,
                 "List of users!",
-                userService.getAllUsers());
+                response
+        );
     }
 
     @PostMapping("/register")
@@ -47,9 +55,7 @@ public class UserController {
             );
         }
         try{
-
             User user = userService.getUserByEmail(data.getEmail());
-
             if (user != null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_ACCEPTABLE,
@@ -102,13 +108,7 @@ public class UserController {
                 );
             }
 
-            GetUserDTO response = new GetUserDTO();
-            response.setId(user.getId().toString());
-            response.setNombre(user.getNombre());
-            response.setCorreo_google(user.getCorreo());
-            response.setTipo_documento(user.getTipo_documento().toString());
-            response.setNumero_documento(user.getNumero_documento());
-
+            GetUserDTO response = userUtils.CreateGetUserDTO(user);
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
                     "User found!",
@@ -135,7 +135,6 @@ public class UserController {
         }
         try{
             User user = userService.getUserByEmail(data.getEmail());
-
             if (user == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_FOUND,
@@ -153,7 +152,6 @@ public class UserController {
             }
 
             String message = userService.registerGuard(user);
-
             if (message == null){
                 return GeneralResponse.getResponse(
                         HttpStatus.NOT_ACCEPTABLE,
@@ -186,18 +184,7 @@ public class UserController {
                 );
             }
 
-            List<GetUserDTO> response = new ArrayList<>();
-
-            list.forEach(guard -> {
-                GetUserDTO dto = new GetUserDTO();
-                dto.setId(guard.getId().toString());
-                dto.setNombre(guard.getNombre());
-                dto.setCorreo_google(guard.getCorreo());
-                dto.setTipo_usuario(guard.getUserType().toString());
-                dto.setTipo_documento(guard.getTipo_documento().toString());
-                dto.setNumero_documento(guard.getNumero_documento());
-                response.add(dto);
-            });
+            List<GetUserDTO> response = userUtils.CreateListOfGetUserDTO(list);
 
             return GeneralResponse.getResponse(
                     HttpStatus.OK,
