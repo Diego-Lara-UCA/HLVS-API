@@ -17,7 +17,6 @@ import java.util.UUID;
 @Data
 @Table(name = "Usuario")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
@@ -41,6 +40,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "FK_id_casa", nullable = true)
     private House casa;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<Report> reports;
 
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority(this.userType.toString()));

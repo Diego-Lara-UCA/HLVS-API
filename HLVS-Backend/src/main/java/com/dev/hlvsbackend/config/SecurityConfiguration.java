@@ -27,7 +27,8 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/users/register").permitAll()
                 .requestMatchers("/api/residential/entrance/anonymous-access").hasAuthority("GUARD")
-                .anyRequest().authenticated());
+                //.anyRequest().authenticated());
+                .anyRequest().permitAll());
 
         http.sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

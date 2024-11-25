@@ -1,11 +1,13 @@
 package com.dev.hlvsbackend.controllers;
 
+import com.dev.hlvsbackend.domain.dtos.Auth.TokenDTO;
 import com.dev.hlvsbackend.domain.dtos.GeneralResponse;
 import com.dev.hlvsbackend.domain.dtos.User.GetUserDTO;
 import com.dev.hlvsbackend.domain.dtos.User.RegisterGuardDTO;
 import com.dev.hlvsbackend.domain.dtos.User.RegisterUserDTO;
 import com.dev.hlvsbackend.domain.dtos.User.VerifyUserDTO;
 import com.dev.hlvsbackend.domain.entities.House;
+import com.dev.hlvsbackend.domain.entities.Token;
 import com.dev.hlvsbackend.domain.entities.User;
 import com.dev.hlvsbackend.domain.enums.UserTypeE;
 import com.dev.hlvsbackend.services.UserService;
@@ -66,9 +68,11 @@ public class UserController {
                 );
             }
 
+            /*Token token = userService.registerToken(user);*/
             return GeneralResponse.getResponse(
                 HttpStatus.CREATED,
                 message
+                /*new TokenDTO(token.getContent())*/
             );
         }catch (Exception e){
             return GeneralResponse.getResponse(
