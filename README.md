@@ -1,4 +1,4 @@
-# Proyecto Final - Equipo de Trabajo
+# Proyecto Final - Ingeniería de software
 
 ## Equipo
 
