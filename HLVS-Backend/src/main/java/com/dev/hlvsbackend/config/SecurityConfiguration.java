@@ -57,24 +57,24 @@ public class SecurityConfiguration {
                 //USER ENDPOINTS
                 .requestMatchers("/api/users/register").permitAll()
                 .requestMatchers("/api/users/all").hasAnyAuthority("ADMIN", "SUPERVISOR")
-                .requestMatchers("/api/users/get-user").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/users/get-user").hasAnyAuthority("ADMIN", "SUPERVISOR", "GUARD", "USER")
                 .requestMatchers("/api/users/register-guard").hasAnyAuthority("ADMIN", "SUPERVISOR")
                 .requestMatchers("/api/users/all-guards").hasAnyAuthority("ADMIN", "SUPERVISOR")
 
                 //ENTRANCE KEY ENDPOINTS
-                .requestMatchers("/api/entrance/key/**").hasAnyAuthority("USER", "GUEST", "ADMIN")
+                .requestMatchers("/api/entrance/key/**").hasAnyAuthority("USER", "GUEST", "ADMIN", "SUPERVISOR", "GUARD")
 
                 //GRACE TIME ENDPOINTS
-                .requestMatchers("/api/grace-time/**").hasAnyAuthority("ADMIN", "SUPERVISOR")
+                .requestMatchers("/api/grace-time/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
 
                 //HOUSE ENDPOINTS
-                .requestMatchers("/api/residential/house/**").hasAnyAuthority("USER", "SUPERVISOR", "ADMIN")
+                .requestMatchers("/api/residential/house/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
 
                 //PERMISSIONS ENDPOINTS
-                .requestMatchers("/api/residential/permission/**").hasAnyAuthority("GUEST", "SUPERVISOR", "ADMIN")
+                .requestMatchers("/api/residential/permission/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
 
                 //ENTRANCES ENDPOINTS
-                .requestMatchers("/api/residential/entrance/**").hasAnyAuthority("GUARD", "ADMIN")
+                .requestMatchers("/api/residential/entrance/**").hasAnyAuthority("ADMIN", "SUPERVISOR", "USER", "GUEST", "GUARD")
 
                 .anyRequest().authenticated());
 
